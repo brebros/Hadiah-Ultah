@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💌 Happy Birthday, Sayang 💖</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💌 Hadiah Ulang Tahun</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <audio id="bg-music" src="lagu.mp3" autoplay loop></audio>
+  <audio id="bg-music" src="lagu.mp3" loop></audio>
 
-  <div class="container">
-    <h1 id="message"></h1>
+  <header class="top">
+    <h1>Happy Birthday, Sayang 💖</h1>
+    <p class="subtitle">Buka hadiah khusus dengan klik tombol di bawah ✨</p>
+    <button id="open-gift" class="gift-btn">🎁 Buka Hadiah</button>
+  </header>
+
+  <main class="gallery-wrap">
+    <section id="gallery" class="gallery">
+      <!-- Thumbnails injected by JS -->
+    </section>
+  </main>
+
+  <!-- Video modal -->
+  <div id="video-modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button id="close-modal" class="close">✕</button>
+      <video id="gift-video" controls playsinline></video>
+    </div>
   </div>
-
-  <div id="hearts"></div>
 
   <script src="script.js"></script>
 </body>

@@ -1,53 +1,105 @@
-// --- Musik otomatis ---
-window.addEventListener("load", function() {
-  const audio = document.getElementById("bg-music");
-  audio.volume = 0.5;
-  audio.play().catch(() => {
-    document.body.addEventListener("click", () => audio.play(), { once: true });
+// filenames for assets (must exist in same folder)
+const images = [
+  'WhatsApp Image 2025-10-07 at 07.37.11_97b0c764.jpg',
+  'WhatsApp Image 2025-10-07 at 07.37.11_a16378d3.jpg',
+  'WhatsApp Image 2025-10-07 at 07.37.11_f69fbc8d.jpg',
+  'WhatsApp Image 2025-10-07 at 07.37.11_f6526f94.jpg'
+];
+const giftVideoFilename = 'hadiah.mp4.mp4'; // use exact uploaded name (keep as-is)
+const bgMusicEl = document.getElementById('bg-music');
+
+// play background music after user interaction (some browsers block autoplay)
+window.addEventListener('load', () => {
+  if (bgMusicEl) {
+    bgMusicEl.volume = 0.45;
+    bgMusicEl.play().catch(()=>{
+      // play on first click if blocked
+      document.body.addEventListener('click', ()=> bgMusicEl.play(), { once:true });
+    });
+  }
+});
+
+// Build gallery thumbnails
+const galleryEl = document.getElementById('gallery');
+images.forEach(src => {
+  const div = document.createElement('div');
+  div.className = 'thumb';
+  div.innerHTML = `<img src="${src}" alt="foto-kenangan" loading="lazy">`;
+  galleryEl.appendChild(div);
+
+  // click to open full image in modal-like view (quick)
+  div.addEventListener('click', ()=> {
+    openImageInModal(src);
   });
 });
 
-// --- Pesan romantis berganti ---
-const messages = [
-  "Alooooo cayaannngggg..... 💕",
-  "Udah mauuu duaaa tahunn yaaaa",
-  "Hampir tiap hari gado ajaa kita tapi ga putus heheheee 😍",
-  "Semogaa bertahannn teyusss yaaaa 💓",
-  "Camat ulang tahun yaaa inceess tuuuu",
-  "Semoga yang di inginkan cepat tercapai, ujiannya lancar, kuliahnya lancar, rezeki deres", 
-  "Aku sayang kamuuu 😘💖",
-  "Kamu tuh rumah terindah buat aku 💞"
-];
+// Simple image modal (reuse video modal to display image)
+const modal = document.getElementById('video-modal');
+const modalVideo = document.getElementById('gift-video');
+const openGiftBtn = document.getElementById('open-gift');
+const closeBtn = document.getElementById('close-modal');
 
-// Tampilkan hanya sekali (semua pesan berurutan, lalu berhenti)
-async function showMessagesOnce() {
-  const messageEl = document.getElementById("message");
-  for (let i = 0; i < messages.length; i++) {
-    messageEl.textContent = messages[i];
-    messageEl.style.animation = "fadeIn 1s forwards";
-    await new Promise(resolve => setTimeout(resolve, 3000)); // jeda 3 detik per pesan
-  }
+function openVideoModal() {
+  if (!modal) return;
+  modal.setAttribute('aria-hidden','false');
+  // pause background music
+  if (bgMusicEl && !bgMusicEl.paused) bgMusicEl.pause();
+  // set video source and autoplay (user clicked so allowed)
+  modalVideo.src = giftVideoFilename;
+  modalVideo.play().catch(()=>{});
 }
 
-// --- Animasi hati hanya 1 kali putaran ---
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.textContent = "💗";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.animationDuration = 3 + Math.random() * 2 + "s";
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 5000);
+function closeModal() {
+  if (!modal) return;
+  modal.setAttribute('aria-hidden','true');
+  // stop the video and clear src to release memory
+  modalVideo.pause();
+  modalVideo.currentTime = 0;
+  modalVideo.src = '';
+  // resume bg music
+  if (bgMusicEl) bgMusicEl.play().catch(()=>{});
 }
 
-// Jalankan efek hati beberapa kali di awal lalu berhenti
-function heartsOnce() {
-  for (let i = 0; i < 30; i++) {
-    setTimeout(createHeart, i * 200);
-  }
+openGiftBtn.addEventListener('click', openVideoModal);
+closeBtn.addEventListener('click', closeModal);
+
+// Close when clicking outside content
+modal.addEventListener('click', (e)=> {
+  if (e.target === modal) closeModal();
+});
+
+// Image modal support: show image in the same modal but using <img> temporarily
+function openImageInModal(src) {
+  if (!modal) return;
+  modal.setAttribute('aria-hidden','false');
+  if (bgMusicEl && !bgMusicEl.paused) bgMusicEl.pause();
+
+  // replace video with an image element
+  modalVideo.pause();
+  modalVideo.src = '';
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.width = '100%';
+  img.style.borderRadius = '8px';
+
+  const content = modal.querySelector('.modal-content');
+  // remove any previous temp image placeholder
+  const prev = content.querySelector('img.temp-preview');
+  if (prev) prev.remove();
+
+  img.className = 'temp-preview';
+  content.appendChild(img);
 }
 
-window.onload = () => {
-  showMessagesOnce();
-  heartsOnce();
-};
+// Remove temp image when closing modal
+closeBtn.addEventListener('click', ()=> {
+  const content = modal.querySelector('.modal-content');
+  const temp = content.querySelector('img.temp-preview');
+  if (temp) temp.remove();
+});
+
+// small floating heart
+const heart = document.createElement('div');
+heart.className='heart-floating';
+heart.textContent='💗';
+document.body.appendChild(heart);
