@@ -19,17 +19,17 @@ const messages = [
   "Kamu tuh rumah terindah buat aku 💞"
 ];
 
-let index = 0;
-function showMessage() {
+// Tampilkan hanya sekali (semua pesan berurutan, lalu berhenti)
+async function showMessagesOnce() {
   const messageEl = document.getElementById("message");
-  messageEl.textContent = messages[index];
-  messageEl.style.animation = "fadeIn 1s forwards";
-  index = (index + 1) % messages.length;
+  for (let i = 0; i < messages.length; i++) {
+    messageEl.textContent = messages[i];
+    messageEl.style.animation = "fadeIn 1s forwards";
+    await new Promise(resolve => setTimeout(resolve, 3000)); // jeda 3 detik per pesan
+  }
 }
-setInterval(showMessage, 3000);
-showMessage();
 
-// --- Animasi hati jatuh ---
+// --- Animasi hati hanya 1 kali putaran ---
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
@@ -37,7 +37,17 @@ function createHeart() {
   heart.style.left = Math.random() * 100 + "vw";
   heart.style.animationDuration = 3 + Math.random() * 2 + "s";
   document.body.appendChild(heart);
-
   setTimeout(() => heart.remove(), 5000);
 }
-setInterval(createHeart, 300);
+
+// Jalankan efek hati beberapa kali di awal lalu berhenti
+function heartsOnce() {
+  for (let i = 0; i < 30; i++) {
+    setTimeout(createHeart, i * 200);
+  }
+}
+
+window.onload = () => {
+  showMessagesOnce();
+  heartsOnce();
+};
