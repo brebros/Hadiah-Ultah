@@ -1,3 +1,15 @@
+// --- Musik otomatis diputar ---
+window.addEventListener("load", function() {
+  const audio = document.getElementById("bg-music");
+  audio.volume = 0.5; // atur volume 50%
+  audio.play().catch(() => {
+    console.log("Autoplay diblokir browser, klik layar untuk mulai musik 🎵");
+    document.body.addEventListener("click", () => {
+      audio.play();
+    }, { once: true });
+  });
+});
+
 const messages = [
   "Dah mau dua tahun aja ya..... 💕",
   "Hampir tiap hari gado ajaa kita tapi ga putus putus heheeee 😆",
